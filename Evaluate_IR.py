@@ -2,9 +2,9 @@ import numpy as np
 from collections import OrderedDict
 
 class Evaluation_IR:
-    def __init__(self):
-        self.ks = ks
-        self.max_k = max(self.ks)
+    def __init__(self, ks = [10,100,1000]):
+        self.ks = ks # k value list
+        self.max_k = max(self.ks) # 1000
 
     def evaluate(self, model, dataset, mode = 'valid'):
         if mode == 'valid':
