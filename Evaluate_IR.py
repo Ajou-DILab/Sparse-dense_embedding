@@ -22,10 +22,15 @@ class Evaluation_IR:
         topns = self.ks
         # make predictions and compute scores
 
-        close_docs_topk = closeset_docs(eval_matrix.astype('float32'), model, method='dot', mode = mode) ## method: doc, cosine, gating
+        close_docs_topk = closeset_docs(eval_matrix.astype('float32'), model, method='dot', mode = mode) ## method: dot, cosine, gating
 
-        ir_score = 
-
+        ir_score = retrieve_eval(close_docs_topk, doc_id, eval_id, qid2pid, topns)
+        for i, topn in enumerate(topns):
+            score[f'prec_{topn}'], score[f'recall_{topn}'], score[f'mrr_{topn}'] = ir_score[0][i], ir_score[1][i], ir_score[2][i]
+        score['MAP'] = ir_score[3]
+        
+        return score
+        
 def closest_docs(query, model, method, mode):
     doc_length = 8841823
     query_length = query_vectors.shape[0]
@@ -36,37 +41,6 @@ def closest_docs(query, model, method, mode):
         document_output = model.get_sparse_output(mode)
     
     return topk_docs
-
-def retrieve_eval_valid(closest_docs, document_ids, query_ids, query2doc, valid_measure, valid_k):
-    # closest_docs = [num_query, TOPN]
-    # document_ids = [num_document]  : pid 저장
-    # query_ids = [num_query]  : qid 저장
-    # query2doc = {qid : pid_list}
-
-    tmp_closest = closest_docs[:, :valid_k]
-    measures = []
-
-    # For each query
-    for i, qid in enumerate(query_ids):
-        # predict_pid
-        pred_pid = [document_ids[p] for p in tmp_closest[i]]
-        # answer_pid
-        true_pid = query2doc[qid]
-        if len(true_pid) == 0:
-            continue
-
-        if 'prec' in valid_measure:
-            measures.append(precision_at_k(true_pid, pred_pid, valid_k))
-        elif 'recall' in valid_measure:
-            measures.append(recall_at_k(true_pid, pred_pid, valid_k))
-        elif 'mrr' in valid_measure:
-            measures.append(mrr(true_pid, pred_pid, valid_k))
-        elif 'map' in valid_measure:
-            measures.append(ap_at_k(true_pid, pred_pid, valid_k))
-        else:
-            raise("Incorrect earlystop measure")
-
-    return np.mean(measures)
 
 def retrieve_eval(closest_docs, doc_ids, query_ids, query2doc, topn_list =[1,3,5]):
     # closest_docs = [num_query, 1000]
