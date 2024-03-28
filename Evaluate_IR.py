@@ -31,15 +31,36 @@ class Evaluation_IR:
         score['MAP'] = ir_score[3]
         
         return score
-        
+
+def similarity(query,doc_vectors,mode='cos'):
+    sim_list = []
+    if mode == 'cos':
+        for i in range(doc_vectors.shape[0]):
+            sim = dot(query,doc_vectors[i]) / (norm(query)*norm(doc_vectors[i]))
+            sim_list.append(sim)
+    elif mode =='dot':
+        for i in range(len(doc_vectors.shape[0])):
+            sim_list.append(dot(query,doc_vectors[i]))
+
+    else:
+        raise Exception("mode 입력 error")
+
+    return sim_list
+
+
 def closest_docs(query, model, method, mode):
     doc_length = 8841823
     query_length = query_vectors.shape[0]
     topk = 1000 
     topk_docs = np.zeros((query_length, topk), dtype=np.int32)
-
+    document_output = model.get_sparse_output(mode)
+    batch_loader = DataBatcher(np.arange(query_length), batch_size=1, drop_remain=False, shuffle=False
+    
     if method == 'dot':
-        document_output = model.get_sparse_output(mode)
+        
+
+    elif method == 'cos':
+        
     
     return topk_docs
 
