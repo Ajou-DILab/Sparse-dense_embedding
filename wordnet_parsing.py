@@ -51,11 +51,8 @@ def get_meanings_and_examples(wset, df):
             lemma_words.append(lemma.name())
 
         # print(lemma_words)
-
-        # 의미 출력
         #print(f"Meaning: {synset.definition()}")
-
-        # 예문 출력 (예문이 없는 경우도 있음)
+        
         examples = synset.examples()
         if examples:
             for example in examples:
