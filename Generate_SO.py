@@ -8,7 +8,7 @@ import torch.multiprocessing as multiprocessing
 from collections import OrderdDict
 
 import easydict
-from transformers import BertTokenizer, BertModel
+from transformers import AutoTokenizer, AutoModel
 
 # TBD 
 from dataloader import Dataset
