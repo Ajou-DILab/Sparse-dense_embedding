@@ -15,7 +15,7 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import AutoTokenizer, AutoModel
 
 import spacy
-# 🚨 [수정] spacy-entity-linker 대신 DBpedia Spotlight 라이브러리 임포트
+
 import spacy_dbpedia_spotlight 
 import nltk
 from nltk.corpus import wordnet as wn
@@ -38,7 +38,7 @@ NUM_WORKERS = 4
 PIN_MEMORY = True
 PERSISTENT_WORKERS = True
 
-# 오프라인 로컬 처리이므로 배치 단위로 묶어서 빠르게 밀어넣습니다.
+
 SPACY_PIPE_BATCH = 256 
 POSTINGS_BATCH_SIZE = 50_000 
 
@@ -47,7 +47,7 @@ if os.name == "nt":
     PERSISTENT_WORKERS = False
 
 
-# ──────────────────── NLTK/모델 로딩 ────────────────────
+
 HERE = os.path.abspath(os.path.dirname(__file__)) if "__file__" in globals() else os.getcwd()
 NLTK_DIR = os.path.join(HERE, ".nltk_data")
 
@@ -70,14 +70,14 @@ def ensure_nltk():
             nltk.download(pkg, download_dir=NLTK_DIR, quiet=True)
 
 
-# ──────────────────── 전역 변수 ────────────────────
+
 STOP = set()
 nlp = None
 tokenizer = None
 LEMM = WordNetLemmatizer()
 
 
-# ──────────────────── 텍스트 정제 함수 ────────────────────
+
 def clean_text_for_indexing(text: str) -> str:
     if not text:
         return ""
@@ -86,29 +86,29 @@ def clean_text_for_indexing(text: str) -> str:
     return text
 
 
-# ──────────────────── Entity Linking (이중 그물망 - Spotlight 버전) ────────────────────
+
 def extract_ne_from_doc(doc):
     ne_items = []
     ne_spans = []
     
-    # 🚨 [수정] DBpedia Spotlight는 doc.ents에 모든 결과를 통합해서 넣어줍니다.
+    
     linked_chars = set()
 
     for ent in doc.ents:
         start_char, end_char = ent.start_char, ent.end_char
         
-        # 겹치는 영역 중복 방지 (가장 먼저 잡힌 긴 단어 우선)
+        
         is_overlap = any(i in linked_chars for i in range(start_char, end_char))
         if is_overlap:
             continue
             
-        # 🕸️ 1차 그물: DBpedia Spotlight 매핑 (kb_id_ 가 존재하는 경우)
+       
         if ent.kb_id_:
-            # URL (예: http://dbpedia.org/resource/United_States)에서 마지막 ID만 추출
+            
             clean_id = ent.kb_id_.split('/')[-1]
             term = f"NE::DBPEDIA::{clean_id}"
             
-        # 🕸️ 2차 그물: spaCy 기본 NER (Spotlight가 놓쳤지만 고유명사로 잡힌 경우)
+       
         else:
             fallback_text = ent.text.lower().replace(" ", "_")
             term = f"NE::{ent.label_}::{fallback_text}"
@@ -123,7 +123,7 @@ def extract_ne_from_doc(doc):
     return ne_items, ne_spans
 
 
-# ──────────────────── 토큰/태깅 유틸 ────────────────────
+
 def to_wn_pos(ptb_tag: str):
     if not ptb_tag: return None
     t = ptb_tag[0]
@@ -137,7 +137,7 @@ def tokenize_to_words(text):
     clean_text = text.strip()
     if not clean_text: return []
     try:
-        # nlp.tokenizer()를 유지하여 파이프라인 실행 없이 순수 단어만 쪼갬
+       
         doc = nlp.tokenizer(clean_text) 
         return [t.text for t in doc]
     except Exception as e:
@@ -161,7 +161,6 @@ def token_in_any_span(start, end, spans):
     return False
 
 
-# ──────────────────── SpanContextEncoder & Dataset ────────────────────
 class SpanContextEncoder(nn.Module):
     def __init__(self, pretrained_model_name="bert-base-uncased", device=None):
         super().__init__()
@@ -191,7 +190,7 @@ def collate_fn(batch):
     return list(pids), words, clean_texts
 
 
-# ──────────────────── WordNet 사전 & SQLite 초기화 ────────────────────
+
 lemma2syns = defaultdict(list)
 try:
     for _syn in wn.all_synsets():
@@ -223,7 +222,7 @@ def init_db(db_path):
     return conn
 
 
-# ──────────────────── 메인 인덱싱 ────────────────────
+
 def main():
     ensure_nltk()
     if not lemma2syns:
@@ -240,7 +239,7 @@ def main():
     if torch.cuda.is_available():
         spacy.require_gpu()
         
-    # 🚨 [수정] DBpedia Spotlight 파이프라인 연결
+    
     nlp = spacy.load("en_core_web_sm", disable=["textcat", "lemmatizer"])
     nlp.add_pipe(
         'dbpedia_spotlight', 
@@ -251,7 +250,7 @@ def main():
     
     collection_path = os.path.join(MSMARCO_DIR,"collection.tsv")
     
-    # 테스트용 데이터 제한 
+    
     ds = PassageDataset(collection_path, sample_limit=None) 
     
     dl = DataLoader(ds, batch_size=BATCH_SIZE, collate_fn=collate_fn, 
@@ -277,7 +276,7 @@ def main():
         with torch.no_grad():
             for pids, words_batch, texts_batch in tqdm(dl, desc="Mapping passages"):
                 
-                # 🟢 파이프라인 단계를 하나씩 밟으며 에러 격리
+                
                 docs = []
                 for txt in texts_batch:
                     doc = nlp.make_doc(txt) 
@@ -285,7 +284,7 @@ def main():
                         try:
                             doc = proc(doc)
                         except Exception:
-                            # 로컬 서버와 통신 중 발생하는 일시적인 타임아웃/에러 무시
+                            
                             pass
                     docs.append(doc)
                 
@@ -407,4 +406,5 @@ def main():
         for s in sample_out: print(s)
 
 if __name__=="__main__":
+
     main()
