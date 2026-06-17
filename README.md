@@ -14,6 +14,4 @@ To evaluate WSD performance and compare against WSD baselines, we used benchmark
 
 # Retrieval Dataset
 
-## Experiments
-
 ## Citation
