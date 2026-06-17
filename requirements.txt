@@ -1,0 +1,25 @@
+torch
+transformers
+nltk
+pandas
+numpy
+tqdm
+matplotlib
+joblib
+orjson
+spacy
+spacy-dbpedia-spotlight
+
+# --- Additional setup (not installable via pip alone) -----------------------
+#
+# 1. spaCy English pipeline used for NER preprocessing in build_sparse_index.py:
+#       python -m spacy download en_core_web_sm
+#
+# 2. NLTK corpora (wordnet, punkt, omw-1.4, stopwords,
+#    averaged_perceptron_tagger) are downloaded automatically on first run
+#    via the nltk.download(...) calls in train_biencoder_wsd.py and
+#    build_sparse_index.py.
+#
+# 3. build_sparse_index.py expects a running DBpedia Spotlight REST endpoint
+#    (default: http://localhost:2222/rest). See:
+#    https://www.dbpedia-spotlight.org/
