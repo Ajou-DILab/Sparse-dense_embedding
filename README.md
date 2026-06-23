@@ -99,4 +99,34 @@ To evaluate on the **full** MS MARCO collection instead, index `collection.tsv`
 directly in step 2 and point evaluation at the full `queries.dev.small.tsv` /
 `qrels.dev.small.tsv`.
 
+---
+
+### 2. Run the pipeline
+
+There are two ways to run, depending on whether you are using the partial subset
+or the full collection.
+
+#### Option A — Partial subset, index + search in one command
+
+For the ~50k-passage partial subset, `run_partial_pipeline.py` indexes the
+collection and then runs query mapping, search, and evaluation in a single
+process (it imports the indexer and the evaluation helpers internally, so the
+mapping is identical on both sides). The whole run finishes in well under an
+hour on a single GPU.
+
+```bash
+python Evaluation/run_partial_pipeline.py \
+    --partial_dir ./data/ms_marco/msmarco_partial \
+    --db_path     ./output/semspem_partial_index.sqlite \
+    --ctx_ckpt    ./checkpoints/best_bi_encoder.pt \
+    --gloss_vec   ./data/wordnet_gloss_embeddings.pt \
+    --medoids     ./data/medoids.pkl \
+    --dbpedia_endpoint http://localhost:2222/rest \
+    --sample_n    3
+```
+
+(The index is always built with `doc_terms` stored, so the `--sample_n`
+per-query inspection works out of the box. Add `--skip_indexing` to re-run
+search against an index you already built.)
+
 ## Citation
