@@ -60,12 +60,6 @@ competitions are used to evaluate WSD quality against baselines.
 
 We use the **MS MARCO passage ranking** collection, in the standard TSV format:
 
-| File | Format |
-| --- | --- |
-| `collection.tsv` | `pid \t passage_text` |
-| `queries.dev.small.tsv` | `qid \t query_text` |
-| `qrels.dev.small.tsv` | `qid \t 0 \t pid \t 1` |
-
 Download from the official MS MARCO site: <https://microsoft.github.io/msmarco/>.
 
 ## Test 
