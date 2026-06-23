@@ -6,10 +6,6 @@ This is the repository for our paper **SemSpEm: Semantic Sparse Embedding for Do
 
 ## Environment
 
-Every entry-point script adds the repository root (and the `Dataset/` /
-`Model/` directories) to `sys.path` at startup, so the scripts can be run from
-any working directory after a fresh `git clone`:
-
 ```bash
 git clone https://github.com/Ajou-DILab/Sparse-dense_embedding.git
 cd Sparse-dense_embedding
