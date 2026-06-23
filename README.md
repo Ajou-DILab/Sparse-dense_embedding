@@ -103,10 +103,7 @@ directly in step 2 and point evaluation at the full `queries.dev.small.tsv` /
 
 ### 2. Run the pipeline
 
-There are two ways to run, depending on whether you are using the partial subset
-or the full collection.
-
-#### Option A — Partial subset, index + search in one command
+#### Partial subset, index + search in one command
 
 For the ~50k-passage partial subset, `run_partial_pipeline.py` indexes the
 collection and then runs query mapping, search, and evaluation in a single
@@ -116,11 +113,11 @@ hour on a single GPU.
 
 ```bash
 python Evaluation/run_partial_pipeline.py \
-    --partial_dir ./data/ms_marco/msmarco_partial \
-    --db_path     ./output/semspem_partial_index.sqlite \
-    --ctx_ckpt    ./checkpoints/best_bi_encoder.pt \
-    --gloss_vec   ./data/wordnet_gloss_embeddings.pt \
-    --medoids     ./data/medoids.pkl \
+    --partial_dir "PARTIAL_SUBSET_PATH" \
+    --db_path     "DB_PATH" \
+    --ctx_ckpt    "MODEL_PATH" \
+    --gloss_vec   "GLOSS_EMBEDDINGS_PATH" \
+    --medoids     "MEDOIDS_PATH" \
     --dbpedia_endpoint http://localhost:2222/rest \
     --sample_n    3
 ```
