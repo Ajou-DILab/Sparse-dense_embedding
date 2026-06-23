@@ -95,20 +95,11 @@ whole pipeline (index + search) in under an hour, we provide a small **partial
 subset** (~50k passages) that keeps the passages relevant to high-MRR dev
 queries and fills the rest at random.
 
-https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link
-
 Download it and unpack it into `./data/ms_marco/msmarco_partial/`:
 
-```
-data/ms_marco/msmarco_partial/
-├── collection.partial.tsv     # pid \t passage_text   (~50k passages)
-├── queries.dev.partial.tsv    # qid \t query_text     (dev queries with a relevant passage in the subset)
-└── qrels.dev.partial.tsv      # qid \t 0 \t pid \t 1
-```
 
 > **Partial subset download:** available from Google Drive — see the link in
-> the repository's release notes. (Replace this line with the actual Drive link
-> when publishing.)
+> the repository's release notes. (link - https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link)
 
 To evaluate on the **full** MS MARCO collection instead, index `collection.tsv`
 directly in step 2 and point evaluation at the full `queries.dev.small.tsv` /
