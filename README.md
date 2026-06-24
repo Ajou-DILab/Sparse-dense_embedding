@@ -106,14 +106,7 @@ mapping is identical on both sides). The whole run finishes in well under an
 hour on a single GPU.
 
 ```bash
-python Test_run/run_partial_pipeline.py \
-    --partial_dir "PARTIAL_SUBSET_PATH" \
-    --db_path     "DB_PATH" \
-    --ctx_ckpt    "MODEL_PATH" \
-    --gloss_vec   "GLOSS_EMBEDDINGS_PATH" \
-    --medoids     "MEDOIDS_PATH" \
-    --dbpedia_endpoint http://localhost:2222/rest \
-    --sample_n    3
+python Test_run/run_partial_pipeline.py --partial_dir "C:\Users\USER\Sparse-dense_embedding\msmarco_partial" --db_path "C:\Users\USER\Sparse-dense_embedding\partial_db.sqlite" --ctx_ckpt "C:\Users\USER\Sparse-dense_embedding\best_bi_encoder_wsd.pt" --gloss_vec "C:\Users\USER\Sparse-dense_embedding\wordnet_gloss_embeddings.pt" --medoids "C:\Users\USER\Sparse-dense_embedding\medoids.pkl" --dbpedia_endpoint http://localhost:2222/rest --sample_n 5
 ```
 
 (The index is always built with `doc_terms` stored, so the `--sample_n`
