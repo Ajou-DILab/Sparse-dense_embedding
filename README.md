@@ -77,7 +77,7 @@ corresponding flags:
 
 **Model download:** the trained checkpoint and precomputed embeddings areavailable from Google Drive —
 
-[Model and gloss embeddings Download]([[https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link](https://drive.google.com/drive/u/3/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr](https://drive.google.com/drive/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr?usp=sharing)))
+[Model and gloss embeddings Download](https://drive.google.com/drive/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr?usp=drive_link)
 
 ---
 
@@ -94,7 +94,7 @@ Download it and unpack it into `./data/ms_marco/msmarco_partial/`:
 
 **Partial subset download:** available from Google Drive —
 
-[Partial subset download]([[https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link](https://drive.google.com/drive/u/3/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr](https://drive.google.com/drive/folders/1P338JvWMrGaKyvqR9aFLE8EAD_oRN302?usp=sharing)))
+[Partial subset download](https://drive.google.com/drive/folders/1P338JvWMrGaKyvqR9aFLE8EAD_oRN302?usp=drive_link)
 
 
 To evaluate on the **full** MS MARCO collection instead, index `collection.tsv`
