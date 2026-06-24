@@ -240,7 +240,7 @@ def load_medoids(medoids_path: str, device) -> Optional[torch.Tensor]:
     Load the medoid tensor produced by clustering the full (POS-agnostic)
     vocabulary. The file may be zlib-compressed; falls back to raw bytes if not.
     """
-    print("\nLoading WSI Medoids (global, POS-agnostic)...")
+    print("\nLoading WSI Medoids ...")
 
     if not os.path.exists(medoids_path):
         print(f"  [ERROR] Medoids file not found: {medoids_path}")
@@ -265,7 +265,7 @@ def load_medoids(medoids_path: str, device) -> Optional[torch.Tensor]:
             medoids_array = data_dict[actual_k]['medoids']
 
         medoids_tensor = torch.from_numpy(medoids_array).float().to(device)
-        print(f"  - Loaded global medoids (K={actual_k}): shape {medoids_tensor.shape}")
+        print(f"  - Loaded global medoids!")
         print("WSI Medoids loading complete.\n")
         return medoids_tensor
     except Exception as e:
