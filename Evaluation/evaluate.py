@@ -514,7 +514,7 @@ def print_samples(args, R, searcher, queries, qrels, eval_qids):
             print("    (no mapped terms)")
         for d in detail:
             sim_str = f"{d['sim']:.4f}" if d['sim'] is not None else "N/A"
-            print(f"    - [{d['kind']:3}] '{d['surface']}'  ->  {d['term']}  (sim={sim_str})")
+            print(f"    - [{d['kind']:3}] '{d['surface']}'  ->  {d['term']}")
 
         # (2) synset / gloss per mapping
         print("\n* synset / gloss per mapped term:")
