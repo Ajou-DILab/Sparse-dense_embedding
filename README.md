@@ -106,7 +106,7 @@ mapping is identical on both sides). The whole run finishes in well under an
 hour on a single GPU.
 
 ```bash
-python Evaluation/run_partial_pipeline.py \
+python Test_run/run_partial_pipeline.py \
     --partial_dir "PARTIAL_SUBSET_PATH" \
     --db_path     "DB_PATH" \
     --ctx_ckpt    "MODEL_PATH" \
