@@ -76,8 +76,8 @@ corresponding flags:
 | `medoids.pkl` | `--medoids` | WSI medoid cluster centers |
 
 > **Model download:** the trained checkpoint and precomputed embeddings are
-> available from Google Drive — see the link in the repository's release notes.
-> (Replace this line with the actual Drive link when publishing.)
+> available from Google Drive —
+> [Model and gloss embeddings Download]([[https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link](https://drive.google.com/drive/u/3/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr](https://drive.google.com/drive/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr?usp=sharing)))
 
 ---
 
@@ -92,8 +92,9 @@ queries and fills the rest at random.
 Download it and unpack it into `./data/ms_marco/msmarco_partial/`:
 
 
-> **Partial subset download:** available from Google Drive — see the link in
-> the repository's release notes. (link - https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link)
+> **Partial subset download:** available from Google Drive —
+> [Partial subset download]([[https://drive.google.com/drive/folders/1mJscPpEcnSMg_szivcH7iOmKfJlTuyot?usp=drive_link](https://drive.google.com/drive/u/3/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr](https://drive.google.com/drive/folders/1P338JvWMrGaKyvqR9aFLE8EAD_oRN302?usp=sharing)))
+
 
 To evaluate on the **full** MS MARCO collection instead, index `collection.tsv`
 directly in step 2 and point evaluation at the full `queries.dev.small.tsv` /
