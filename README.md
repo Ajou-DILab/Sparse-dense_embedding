@@ -77,7 +77,7 @@ corresponding flags:
 
 **Model download:** the trained checkpoint and precomputed embeddings areavailable from Google Drive —
 
-[Model and gloss embeddings Download](https://drive.google.com/drive/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr?usp=drive_link)
+[Download Link](https://drive.google.com/drive/folders/1kZYOX9WtIq6lnWkiHdMNIapknyiUDiKr?usp=drive_link)
 
 ---
 
