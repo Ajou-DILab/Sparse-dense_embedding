@@ -490,7 +490,7 @@ def run_indexing(args):
 
         total_mappings = ne_total_mappings + ne_etc_total_mappings + wsd_total_mappings + wsi_total_mappings
         total_unique   = ne_unique_terms + ne_etc_unique_terms + wsd_unique_terms + wsi_unique_terms
-
+'''
         print("\n" + "=" * 62)
         print("Final Inverted Index Statistics")
         print("=" * 62)
@@ -536,7 +536,7 @@ def run_indexing(args):
         print(f"  {'WSD/WSI (cosine sim)':<28} {fmt_conf(ww_global_avg):>10}"
               f"   {ww_global_cnt:>10,}   {ww_passage_cnt:>10,}")
         print("=" * 62 + "\n")
-
+'''
         print(f"SQLite index saved -> {OUT_SQLITE_DB}")
         print(f"  N={N:,}, avgdl={avgdl:.4f}")
         for s in sample_out:
