@@ -84,8 +84,8 @@ corresponding flags:
 
 ### 1. Get the partial subset (for fast end-to-end runs)
 
-To validate the whole pipeline (index + search) in under an hour, we provide a small **partial
-subset** (~50k passages) that keeps the passages small sample dev queries.
+To validate the whole pipeline (index + search) in under an hour, we provide a small sample dev queries **partial
+subset** (~50k passages).
 
 **Partial subset download:** available from Google Drive —
 
