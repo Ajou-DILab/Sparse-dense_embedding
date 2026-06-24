@@ -490,53 +490,7 @@ def run_indexing(args):
 
         total_mappings = ne_total_mappings + ne_etc_total_mappings + wsd_total_mappings + wsi_total_mappings
         total_unique   = ne_unique_terms + ne_etc_unique_terms + wsd_unique_terms + wsi_unique_terms
-'''
-        print("\n" + "=" * 62)
-        print("Final Inverted Index Statistics")
-        print("=" * 62)
-        print(f"  {'Bucket':<22} {'Mappings (total)':>16}   {'Unique terms':>12}")
-        print("-" * 62)
-        print(f"  {'NE (typed)':<22} {ne_total_mappings:>16,}   {ne_unique_terms:>12,}")
-        print(f"  {'NE::ETC (untyped)':<22} {ne_etc_total_mappings:>16,}   {ne_etc_unique_terms:>12,}")
-        print(f"  {'WSD (WordNet synset)':<22} {wsd_total_mappings:>16,}   {wsd_unique_terms:>12,}")
-        print(f"  {'WSI (cluster)':<22} {wsi_total_mappings:>16,}   {wsi_unique_terms:>12,}")
-        print("-" * 62)
-        print(f"  {'Total':<22} {total_mappings:>16,}   {total_unique:>12,}")
-        print("=" * 62)
 
-        # Passage-level mapping confidence summary.
-        # Passages with no NE / WSD-WSI mapping (NULL avg) are excluded.
-        cur.execute("""
-            SELECT
-                AVG(ne_conf_avg),
-                SUM(ne_conf_cnt),
-                COUNT(CASE WHEN ne_conf_avg IS NOT NULL THEN 1 END),
-                AVG(wsd_wsi_conf_avg),
-                SUM(wsd_wsi_conf_cnt),
-                COUNT(CASE WHEN wsd_wsi_conf_avg IS NOT NULL THEN 1 END)
-            FROM passage_confidence
-        """)
-        row = cur.fetchone()
-        ne_global_avg      = row[0]
-        ne_global_cnt      = row[1] or 0
-        ne_passage_cnt     = row[2] or 0
-        ww_global_avg      = row[3]
-        ww_global_cnt      = row[4] or 0
-        ww_passage_cnt     = row[5] or 0
-
-        def fmt_conf(avg):
-            return f"{avg:.4f}" if avg is not None else "N/A"
-
-        print("\nPassage Mapping Confidence Summary")
-        print("=" * 62)
-        print(f"  {'Metric':<28} {'Global avg':>10}   {'Mappings':>10}   {'Passages':>10}")
-        print("-" * 62)
-        print(f"  {'NE (similarityScore)':<28} {fmt_conf(ne_global_avg):>10}"
-              f"   {ne_global_cnt:>10,}   {ne_passage_cnt:>10,}")
-        print(f"  {'WSD/WSI (cosine sim)':<28} {fmt_conf(ww_global_avg):>10}"
-              f"   {ww_global_cnt:>10,}   {ww_passage_cnt:>10,}")
-        print("=" * 62 + "\n")
-'''
         print(f"SQLite index saved -> {OUT_SQLITE_DB}")
         print(f"  N={N:,}, avgdl={avgdl:.4f}")
         for s in sample_out:
