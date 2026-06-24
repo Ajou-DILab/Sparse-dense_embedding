@@ -89,21 +89,15 @@ whole pipeline (index + search) in under an hour, we provide a small **partial
 subset** (~50k passages) that keeps the passages relevant to high-MRR dev
 queries and fills the rest at random.
 
-Download it and unpack it into `./data/ms_marco/msmarco_partial/`:
-
-
 **Partial subset download:** available from Google Drive —
 
-[Partial subset download](https://drive.google.com/drive/folders/1P338JvWMrGaKyvqR9aFLE8EAD_oRN302?usp=drive_link)
+You have to download msmarco_partial folder for run_partial_pipeline.py emplementation.
 
-
-To evaluate on the **full** MS MARCO collection instead, index `collection.tsv`
-directly in step 2 and point evaluation at the full `queries.dev.small.tsv` /
-`qrels.dev.small.tsv`.
+[Partial subset download](https://drive.google.com/drive/folders/1MPkf9djEDEg1FBpn_4BLZJxJxKebd69y?usp=drive_link)
 
 ---
 
-### 2. Run the pipeline
+### 2. Run the partial subset pipeline
 
 #### Partial subset, index + search in one command
 
