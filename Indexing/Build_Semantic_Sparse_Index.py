@@ -179,7 +179,7 @@ def run_indexing(args):
         with torch.no_grad():
             for pids, words_batch, clean_texts_batch, raw_texts_batch in tqdm(dl, desc="Mapping passages"):
 
-                with torch.autocast(device_type="cuda", dtype=torch.bfloat16,
+                with torch.autocast(device_type="cuda", dtype=torch.float16,
                                     enabled=(DEVICE.type == "cuda")):
                     enc = tokenizer(words_batch, is_split_into_words=True,
                                     return_tensors="pt", padding=True,
