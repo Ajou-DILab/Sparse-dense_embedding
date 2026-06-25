@@ -3,7 +3,7 @@ Partial-subset pipeline: index + search in a single run.
 
 For the small (~50k passage) partial MS MARCO subset, this script runs the
 *entire* flow end to end -- build the semantic sparse index, then map queries,
-search, and report MRR@10 / Recall@k -- so the whole thing finishes in well
+search, and report MRR@10 -- so the whole thing finishes in well
 under an hour on a single GPU.
 
 It deliberately contains **no retrieval or indexing logic of its own**. It is
@@ -93,19 +93,19 @@ def parse_args():
     p.add_argument("--medoids", default="./data/medoids.pkl")
     p.add_argument("--pretrained_model", default="bert-base-uncased")
 
-    # ── DBpedia Spotlight (shared by index & query mapping) ──────────────────
+    
     p.add_argument("--dbpedia_endpoint", default="http://localhost:2222/rest")
     p.add_argument("--dbpedia_confidence", type=float, default=0.6)
     p.add_argument("--dbpedia_support", type=int, default=20)
 
-    # ── SBM25 / evaluation knobs ─────────────────────────────────────────────
+    
     p.add_argument("--k1", type=float, default=1.2)
     p.add_argument("--b", type=float, default=0.75)
     p.add_argument("--top_k", type=int, default=1000)
     p.add_argument("--sample_n", type=int, default=3)
     p.add_argument("--max_queries", type=int, default=None)
 
-    # ── Flow control ─────────────────────────────────────────────────────────
+    
     p.add_argument("--skip_indexing", action="store_true",
                    help="Skip indexing and search the existing --db_path.")
 
@@ -155,7 +155,7 @@ def main():
     print(f"  qrels       : {args.qrels}")
     print(f"  db_path     : {args.db_path}")
 
-    # ── [1] Passage indexing ─────────────────────────────────────────────────
+    
     if args.skip_indexing and os.path.exists(args.db_path):
         print(f"\n[1] Indexing skipped; using existing index: {args.db_path}")
     else:
