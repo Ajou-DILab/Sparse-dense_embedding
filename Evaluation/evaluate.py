@@ -471,11 +471,7 @@ def evaluate(args, R: Resources, searcher: SBM25Searcher,
     print("\n" + "=" * 52)
     print("Retrieval Evaluation Results")
     print("=" * 52)
-    print(f"  Valid queries evaluated : {valid:>10,}")
-    print(f"  Queries with no results : {no_result:>10,}")
-    print("-" * 52)
     print(f"  MRR@10                  : {mrr10:>10.4f}")
-    print(f"  Recall@{args.top_k:<17}: {recall_at_k:>10.4f}")
     print("=" * 52)
 
     return {"mrr@10": mrr10, f"recall@{args.top_k}": recall_at_k,
