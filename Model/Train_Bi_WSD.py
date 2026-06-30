@@ -46,9 +46,9 @@ def parse_args():
 
 ARGS = parse_args()
 
-# =============================================================================
+
 # 0. Configuration
-# =============================================================================
+
 CSV_PATH        = ARGS.csv_path
 BEST_MODEL_PATH = ARGS.best_model_path
 
@@ -64,15 +64,15 @@ TAU             = 0.1
 N_EASY, N_SEMI, N_HARD = 4, 2, 1
 
 
-# =============================================================================
+
 # 1. Build WordNet sense/gloss structures
-# =============================================================================
+
 SUPERSENSE2SYNS, LEMMA2SYNS, SYNSET2GLOSS = build_wordnet_index()
 
 
-# =============================================================================
+
 # 2. Train / validation step
-# =============================================================================
+
 def run_epoch(model: SharedEncoder, loader, optimizer, is_train: bool):
     model.train() if is_train else model.eval()
     total_loss, n_batches = 0.0, 0
@@ -114,9 +114,9 @@ def run_epoch(model: SharedEncoder, loader, optimizer, is_train: bool):
     return total_loss / max(n_batches, 1)
 
 
-# =============================================================================
+
 # 3. Main
-# =============================================================================
+
 def main():
     print("Loading dataset...")
     dataset = BiEncoderWSDataset(
@@ -139,7 +139,6 @@ def main():
     best_val_loss = float('inf')
     train_losses, val_losses = [], []
 
-    # Print a sample gloss for sanity-checking the input format
     sample_sid = next(iter(SYNSET2GLOSS))
     print("\nConfiguration summary:")
     print("  Gloss input format   'target word: definition'")
