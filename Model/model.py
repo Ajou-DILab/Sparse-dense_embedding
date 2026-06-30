@@ -1,7 +1,7 @@
 """
 Encoder model definitions for the SEMSPEM pipeline.
 
-- SharedEncoder: bi-encoder used during WSD training; encodes both the target-word context and the WordNet gloss.
+- BiEncoder: bi-encoder used during WSD training; encodes both the target-word context and the WordNet gloss.
 - SpanContextEncoder: thin wrapper around a tokenizer + transformer encoder,
   used during sparse indexing to embed passage token spans.
 """
@@ -13,7 +13,7 @@ import torch.nn as nn
 from transformers import AutoModel, AutoTokenizer
 
 
-class SharedEncoder(nn.Module):
+class BiEncoder(nn.Module):
     """A single shared transformer used to encode both contexts and glosses."""
 
     def __init__(self, pretrained: str, device):
