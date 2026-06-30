@@ -45,10 +45,10 @@ import os
 import sys
 from types import SimpleNamespace
 
-# ──────────────────────────────────────────────────────────────────────────
+
 # Make the repo root and the sibling package dirs importable regardless of the
 # working directory, so this runs after a fresh `git clone` on any platform.
-# ──────────────────────────────────────────────────────────────────────────
+
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(_THIS_DIR)
 for _p in (_REPO_ROOT,
@@ -66,16 +66,16 @@ from Build_Semantic_Sparse_Index import run_indexing  # noqa: E402
 import evaluate as ev  # noqa: E402
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  Arguments — superset of what run_indexing() and evaluate need
-# ════════════════════════════════════════════════════════════════════════════
+
+#  Arguments 
+
 def parse_args():
     p = argparse.ArgumentParser(
         description="Partial-subset SEMSPEM pipeline (index + search in one run)"
     )
 
-    # ── Partial subset (downloadable; see README) ────────────────────────────
-    p.add_argument("--partial_dir", default="./data/ms_marco/msmarco_partial",
+    # Partial subset (downloadable; see README)
+    p.add_argument("--partial_dir", default="./msmarco_partial",
                    help="Directory holding collection.partial.tsv / "
                         "queries.dev.partial.tsv / qrels.dev.partial.tsv")
     p.add_argument("--collection", default=None,
@@ -85,12 +85,12 @@ def parse_args():
     p.add_argument("--qrels", default=None,
                    help="qrels TSV (default <partial_dir>/qrels.dev.partial.tsv)")
 
-    # ── Index + model resources ──────────────────────────────────────────────
-    p.add_argument("--db_path", default="./output/semspem_partial_index.sqlite",
+    # Index + model resources
+    p.add_argument("--db_path", default="./partial_db.sqlite",
                    help="SQLite index path (written by indexing, read by search)")
-    p.add_argument("--ctx_ckpt", default="./checkpoints/best_bi_encoder.pt")
-    p.add_argument("--gloss_vec", default="./data/wordnet_gloss_embeddings.pt")
-    p.add_argument("--medoids", default="./data/medoids.pkl")
+    p.add_argument("--ctx_ckpt", default="/best_bi_encoder_wsd.pt")
+    p.add_argument("--gloss_vec", default="./wordnet_gloss_embeddings.pt")
+    p.add_argument("--medoids", default="./medoids.pkl")
     p.add_argument("--pretrained_model", default="bert-base-uncased")
 
     
@@ -140,9 +140,9 @@ def _indexing_args(args):
     )
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  main — index, then search/evaluate
-# ════════════════════════════════════════════════════════════════════════════
+
+#  index, then search/evaluate
+
 def main():
     args = parse_args()
 
@@ -164,7 +164,7 @@ def main():
         print("=" * 62)
         run_indexing(_indexing_args(args))
 
-    # ── [2] Query mapping + SBM25 search + evaluation ────────────────────────
+    # [2] Query mapping + SBM25 search + evaluation
     print("\n" + "=" * 62)
     print("  [2] Query mapping + SBM25 search + evaluation")
     print("=" * 62)
@@ -178,7 +178,7 @@ def main():
 
     results = ev.evaluate(args, R, searcher, queries, qrels)
 
-    # ── [3] Per-query qualitative sample ─────────────────────────────────────
+    #  [3] query qualitative sample
     if args.sample_n > 0:
         ev.print_samples(args, R, searcher, queries, qrels, results["eval_qids"])
 
