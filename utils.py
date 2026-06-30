@@ -1,12 +1,3 @@
-"""
-Shared utility functions for the SEMSPEM pipeline.
-
-This module collects WordNet-related helpers used during bi-encoder training
-(sense/gloss bookkeeping, negative sampling) as well as text-processing and
-indexing helpers used when building the sparse index (tokenization, POS
-tagging, named-entity span alignment, medoid loading, SQLite setup).
-"""
-
 import io
 import os
 import re
