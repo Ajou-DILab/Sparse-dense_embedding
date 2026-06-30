@@ -60,11 +60,8 @@ from nltk.corpus import wordnet as wn
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
-# ──────────────────────────────────────────────────────────────────────────
-# Make the repository root (and the Model/ package dir) importable regardless
-# of the current working directory, so `python Evaluation/evaluate.py`
-# works after a fresh `git clone` on any platform.
-# ──────────────────────────────────────────────────────────────────────────
+
+
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _REPO_ROOT = os.path.dirname(_THIS_DIR)
 for _p in (_REPO_ROOT, os.path.join(_REPO_ROOT, "Model")):
@@ -84,15 +81,12 @@ from utils import (  # noqa: E402  (import after sys.path tweak)
 from model import SpanContextEncoder  # noqa: E402
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  Arguments
-# ════════════════════════════════════════════════════════════════════════════
+
 def parse_args():
     p = argparse.ArgumentParser(description="Evaluate SEMSPEM sparse retrieval")
 
-    # Query / qrels inputs. Provide them directly, or point --partial_dir at a
-    # directory that contains queries.dev.partial.tsv / qrels.dev.partial.tsv
-    # (the layout of the downloadable partial subset) and they will be filled in.
     p.add_argument("--queries", default=None,
                    help="Query TSV path (qid \\t text). Required unless --partial_dir is given.")
     p.add_argument("--qrels", default=None,
@@ -158,9 +152,9 @@ def _resolve_query_paths(args):
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  Resource container — loaded once, shared by query mapping
-# ════════════════════════════════════════════════════════════════════════════
+
 class Resources:
     def __init__(self, args):
         ensure_nltk()
@@ -209,11 +203,11 @@ class Resources:
         self.medoids_tensor = load_medoids(args.medoids, DEVICE)
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  Query mapping — identical NE -> WSD -> WSI pipeline as indexing
 #  Returns (terms, detail). `detail` is only populated when collect_detail=True
 #  (used for the qualitative sample output).
-# ════════════════════════════════════════════════════════════════════════════
+
 def map_query(query_text: str, R: Resources, collect_detail: bool = False
               ) -> Tuple[List[str], list]:
     clean_text = clean_text_for_indexing(query_text)
@@ -229,7 +223,7 @@ def map_query(query_text: str, R: Resources, collect_detail: bool = False
             last_hidden = R.ctx.encoder(**enc).last_hidden_state[0]
             word_ids = enc.word_ids(batch_index=0)
 
-    # ── NE (DBpedia Spotlight) ──────────────────────────────────────────────
+    # NE (DBpedia Spotlight) 
     try:
         doc = R.nlp_spotlight(query_text)
     except Exception:
@@ -273,7 +267,7 @@ def map_query(query_text: str, R: Resources, collect_detail: bool = False
         if collect_detail:
             detail.append({"term": term, "surface": ent.text, "kind": "NE", "sim": sim_score})
 
-    # ── WSD -> WSI ──────────────────────────────────────────────────────────
+    # WSD -> WSI 
     lemmas, tags = lemmatize_tokens(words)
     wsd_terms = []
     seen = set()
@@ -324,9 +318,9 @@ def map_query(query_text: str, R: Resources, collect_detail: bool = False
     return ne_terms + wsd_terms, detail
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  SBM25 searcher
-# ════════════════════════════════════════════════════════════════════════════
+
 class SBM25Searcher:
     def __init__(self, db_path: str, k1: float = 1.2, b: float = 0.75):
         if not os.path.exists(db_path):
@@ -344,7 +338,7 @@ class SBM25Searcher:
         self.doclen = dict(self.cur.execute("SELECT pid, dl FROM doclen").fetchall())
         print(f"  N={self.N:,}, avgdl={self.avgdl:.4f}, doclen entries={len(self.doclen):,}")
 
-        # Detect optional doc_terms / doc_text tables (for --sample_n output).
+        
         tbls = {r[0] for r in self.cur.execute(
             "SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         self.has_doc_terms = "doc_terms" in tbls and "doc_text" in tbls
@@ -386,9 +380,9 @@ class SBM25Searcher:
         return row[0] if row else ""
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  synset / gloss description helper (for qualitative output)
-# ════════════════════════════════════════════════════════════════════════════
+
+#  synset, gloss description helper (for qualitative output)
+
 def describe_term(term: str) -> dict:
     info = {"term": term, "category": None, "synset": None, "gloss": None}
     if term.startswith("NE::"):
@@ -412,9 +406,9 @@ def describe_term(term: str) -> dict:
     return info
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  Data loading
-# ════════════════════════════════════════════════════════════════════════════
+
 def load_qrels(path: str) -> dict:
     qrels = defaultdict(set)
     with open(path, 'r', encoding='utf-8') as f:
@@ -433,9 +427,9 @@ def load_queries(path: str) -> dict:
     return queries
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  Evaluation (pure definitions; no score adjustments)
-# ════════════════════════════════════════════════════════════════════════════
+
 def evaluate(args, R: Resources, searcher: SBM25Searcher,
              queries: dict, qrels: dict) -> dict:
     eval_qids = [qid for qid in queries if qid in qrels]
@@ -478,9 +472,9 @@ def evaluate(args, R: Resources, searcher: SBM25Searcher,
             "valid_queries": valid, "eval_qids": eval_qids}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  Qualitative per-query sample output
-# ════════════════════════════════════════════════════════════════════════════
+
+#  Qualitative per query sample output
+
 def print_samples(args, R, searcher, queries, qrels, eval_qids):
     sample_qids = eval_qids[:args.sample_n]
     print("\n\n" + "#" * 62)
@@ -548,9 +542,9 @@ def print_samples(args, R, searcher, queries, qrels, eval_qids):
     print("\n" + "#" * 62)
 
 
-# ════════════════════════════════════════════════════════════════════════════
+
 #  main
-# ════════════════════════════════════════════════════════════════════════════
+
 def main():
     args = parse_args()
 
