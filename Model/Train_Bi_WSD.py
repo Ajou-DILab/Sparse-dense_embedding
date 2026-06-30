@@ -1,7 +1,7 @@
 """
 Train the SEMSPEM WSD bi-encoder with a hierarchical weighted InfoNCE loss.
 
-Encodes (context, target span) and WordNet glosses with a shared transformer,
+Encodes (context, target span) and WordNet glosses with a Bi-encoder transformer,
 and contrasts the gold sense against easy / semi-hard / hard negative senses
 sampled from the WordNet sense inventory.
 """
@@ -31,7 +31,7 @@ for _p in (_REPO_ROOT,
 
 from dataset import BiEncoderWSDataset, wsd_collate_fn
 from Loss import W_EASY, W_HARD, W_SEMI, hierarchical_infonce_loss
-from model import SharedEncoder
+from model import BiEncoder
 from utils import build_wordnet_index
 
 
@@ -73,7 +73,7 @@ SUPERSENSE2SYNS, LEMMA2SYNS, SYNSET2GLOSS = build_wordnet_index()
 
 # 2. Train / validation step
 
-def run_epoch(model: SharedEncoder, loader, optimizer, is_train: bool):
+def run_epoch(model: BiEncoder, loader, optimizer, is_train: bool):
     model.train() if is_train else model.eval()
     total_loss, n_batches = 0.0, 0
 
@@ -132,8 +132,8 @@ def main():
     val_loader   = DataLoader(val_ds,   batch_size=BATCH_SIZE,
                               shuffle=False, collate_fn=wsd_collate_fn)
 
-    print("Initializing model (Shared Encoder)...")
-    model     = SharedEncoder(PRETRAINED, DEVICE)
+    print("Initializing model (Bi-Encoder)...")
+    model     = BiEncoder(PRETRAINED, DEVICE)
     optimizer = torch.optim.AdamW(model.parameters(), lr=LR)
 
     best_val_loss = float('inf')
