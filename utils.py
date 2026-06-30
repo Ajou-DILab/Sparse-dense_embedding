@@ -26,9 +26,9 @@ from nltk.stem import WordNetLemmatizer
 LEMM = WordNetLemmatizer()
 
 
-# =============================================================================
+
 # NLTK data setup (shared across entry scripts)
-# =============================================================================
+
 def ensure_nltk(nltk_dir: str = "./.nltk_data") -> None:
     """
     Make sure the NLTK corpora required by this project (wordnet, punkt,
@@ -53,22 +53,7 @@ def ensure_nltk(nltk_dir: str = "./.nltk_data") -> None:
             nltk.download(pkg, download_dir=nltk_dir, quiet=True)
 
 
-# =============================================================================
-# WordNet sense/gloss structures (used for bi-encoder training)
-# =============================================================================
 def build_wordnet_index() -> Tuple[Dict[str, List[str]], Dict[str, List[str]], Dict[str, str]]:
-    """
-    Build the WordNet lookup tables used for negative sampling and gloss
-    encoding during training.
-
-    Gloss format: "target word: definition"
-    e.g. bank.n.01 -> "bank: a financial institution that accepts deposits"
-
-    Returns:
-        supersense2syns: lexname (supersense) -> list of synset ids
-        lemma2syns:       lemma -> list of synset ids
-        synset2gloss:     synset id -> "target word: definition" string
-    """
     print("Building WordNet index...")
 
     supersense2syns: Dict[str, List[str]] = defaultdict(list)
@@ -79,8 +64,7 @@ def build_wordnet_index() -> Tuple[Dict[str, List[str]], Dict[str, List[str]], D
         sid        = syn.name()
         supersense = syn.lexname()
 
-        # e.g. "bank: a financial institution that accepts deposits"
-        lemma_word = sid.split('.')[0].replace('_', ' ')  # e.g. "bank", "play on"
+        lemma_word = sid.split('.')[0].replace('_', ' ')  
         definition = syn.definition()
         gloss      = f"{lemma_word}: {definition}"
 
@@ -104,13 +88,7 @@ def sample_negatives(
     n_semi: int,
     n_hard: int,
 ):
-    """
-    Sample easy / semi-hard / hard negative synsets for a gold synset.
 
-    - Hard:  other senses of the same lemma
-    - Semi:  other synsets within the same supersense (lexname), excluding hard negatives
-    - Easy:  synsets from a different supersense entirely
-    """
     syn        = wn.synset(gold_synset_id)
     supersense = syn.lexname()
     lemma_name = gold_synset_id.split('.')[0]
@@ -138,9 +116,6 @@ def sample_negatives(
             safe_sample(hard_pool, n_hard))
 
 
-# =============================================================================
-# WordNet lemma index (lightweight version used during indexing)
-# =============================================================================
 def build_lemma_to_synsets() -> Dict[str, List[str]]:
     """Build a lemma -> [synset_id, ...] lookup over all of WordNet."""
     lemma2syns: Dict[str, List[str]] = defaultdict(list)
@@ -150,11 +125,8 @@ def build_lemma_to_synsets() -> Dict[str, List[str]]:
     return lemma2syns
 
 
-# =============================================================================
-# POS mapping & tokenization (used during indexing)
-# =============================================================================
 def to_wn_pos(ptb_tag: str) -> Optional[str]:
-    """Map a Penn Treebank POS tag to the corresponding WordNet POS code."""
+    
     if not ptb_tag:
         return None
     t = ptb_tag[0]
@@ -170,7 +142,7 @@ def to_wn_pos(ptb_tag: str) -> Optional[str]:
 
 
 def clean_text_for_indexing(text: str) -> str:
-    """Strip control characters and non-alphanumeric characters, collapse whitespace."""
+    
     if not text:
         return ""
     text = re.sub(r'[\x00-\x1F\x7F]', ' ', text)
@@ -180,7 +152,7 @@ def clean_text_for_indexing(text: str) -> str:
 
 
 def tokenize_to_words(text: str, tokenizer_nlp) -> List[str]:
-    """Tokenize cleaned text into words using a blank spaCy tokenizer."""
+   
     clean_text = text.strip()
     if not clean_text:
         return []
@@ -202,9 +174,9 @@ def lemmatize_tokens(words: List[str]) -> Tuple[List[str], List[str]]:
     return lemmas, tags
 
 
-# =============================================================================
+
 # Named-entity span alignment (DBpedia char offsets -> word indices)
-# =============================================================================
+
 def build_char_to_word_idx(words: List[str], text: str) -> Dict[int, int]:
     """
     Map each token's character span (within `text`) to its word index.
@@ -232,9 +204,9 @@ def get_ne_word_indices(ent_start_char: int, ent_end_char: int,
     return indices
 
 
-# =============================================================================
+
 # Medoid (WSI cluster) loading
-# =============================================================================
+
 def load_medoids(medoids_path: str, device) -> Optional[torch.Tensor]:
     """
     Load the medoid tensor produced by clustering the full (POS-agnostic)
@@ -273,21 +245,10 @@ def load_medoids(medoids_path: str, device) -> Optional[torch.Tensor]:
         return None
 
 
-# =============================================================================
-# SQLite index schema
-# =============================================================================
-def init_db(db_path: str, store_doc_terms: bool = False):
-    """Create (or recreate) the SQLite database with the index schema.
 
-    Args:
-        db_path: output SQLite path.
-        store_doc_terms: if True, also create the optional `doc_terms` and
-            `doc_text` tables. These store, per passage, the mapped term->tf
-            dictionary and the raw passage text. They are not needed for
-            scoring (the postings list is sufficient), but they let the
-            retrieval script reverse-look-up *why* a document was retrieved
-            (its indexed senses/entities) for inspection / qualitative output.
-    """
+# SQLite index 
+
+def init_db(db_path: str, store_doc_terms: bool = False):
     if os.path.exists(db_path):
         os.remove(db_path)
     conn = sqlite3.connect(db_path)
@@ -295,21 +256,7 @@ def init_db(db_path: str, store_doc_terms: bool = False):
     cur.execute("PRAGMA journal_mode=OFF;")
     cur.execute("PRAGMA synchronous=OFF;")
     cur.execute("PRAGMA temp_store=MEMORY;")
-    cur.executescript("""
-        CREATE TABLE meta (k TEXT PRIMARY KEY, v TEXT);
-        CREATE TABLE doclen (pid TEXT PRIMARY KEY, dl INTEGER NOT NULL) WITHOUT ROWID;
-        CREATE TABLE postings ( term TEXT PRIMARY KEY, df INTEGER NOT NULL, blob BLOB NOT NULL ) WITHOUT ROWID;
-        CREATE TABLE tmp_tf ( term TEXT NOT NULL, pid TEXT NOT NULL, tf INTEGER NOT NULL );
-        CREATE INDEX idx_tmp_tf_term ON tmp_tf(term);
-        CREATE INDEX idx_tmp_tf_pid ON tmp_tf(pid);
-        CREATE TABLE passage_confidence (
-            pid              TEXT PRIMARY KEY,
-            ne_conf_avg      REAL,
-            ne_conf_cnt      INTEGER,
-            wsd_wsi_conf_avg REAL,
-            wsd_wsi_conf_cnt INTEGER
-        ) WITHOUT ROWID;
-    """)
+
     if store_doc_terms:
         cur.executescript("""
             CREATE TABLE doc_terms ( pid TEXT PRIMARY KEY, blob BLOB NOT NULL ) WITHOUT ROWID;
