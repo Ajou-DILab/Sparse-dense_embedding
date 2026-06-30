@@ -1,8 +1,7 @@
 """
 Encoder model definitions for the SEMSPEM pipeline.
 
-- SharedEncoder: bi-encoder (single shared transformer) used during WSD
-  training; encodes both the target-word context and the WordNet gloss.
+- SharedEncoder: bi-encoder used during WSD training; encodes both the target-word context and the WordNet gloss.
 - SpanContextEncoder: thin wrapper around a tokenizer + transformer encoder,
   used during sparse indexing to embed passage token spans.
 """
