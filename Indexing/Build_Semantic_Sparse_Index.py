@@ -183,7 +183,7 @@ def run_indexing(args):
                                     enabled=(DEVICE.type == "cuda")):
                     enc = tokenizer(words_batch, is_split_into_words=True,
                                     return_tensors="pt", padding=True,
-                                    truncation=True).to(DEVICE, non_blocking=True)
+                                    truncation=True).to(DEVICE)
                     last_hidden = ctx.encoder(**enc).last_hidden_state
 
                 # Run DBpedia Spotlight NE recognition
