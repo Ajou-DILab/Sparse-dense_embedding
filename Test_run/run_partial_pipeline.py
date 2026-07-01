@@ -33,8 +33,11 @@ Example
         --ctx_ckpt    ./checkpoints/best_bi_encoder.pt \
         --gloss_vec   ./data/wordnet_gloss_embeddings.pt \
         --medoids     ./data/medoids.pkl \
-        --dbpedia_endpoint http://localhost:2222/rest \
         --sample_n    3
+
+By default this uses the public DBpedia Spotlight API (no local server
+needed). If you hit rate limits (HTTP 403), start a local Spotlight server
+and add --dbpedia_endpoint http://localhost:2222/rest
 
 Re-run search only (index already built):
     ... add --skip_indexing
@@ -93,8 +96,17 @@ def parse_args():
     p.add_argument("--medoids", default="./medoids.pkl")
     p.add_argument("--pretrained_model", default="bert-base-uncased")
 
-    
-    p.add_argument("--dbpedia_endpoint", default="http://localhost:2222/rest")
+    # DBpedia Spotlight endpoint.
+    #
+    # Default: the public hosted API, so the partial subset runs with zero
+    # local setup. Note the URL omits the trailing /annotate (spacy-dbpedia-
+    # spotlight appends it) and has no trailing slash.
+    #
+    # The public API is rate-limited and may return HTTP 403 under heavy use.
+    # If that happens, run a local DBpedia Spotlight server (Docker or JAR) and
+    # pass its endpoint instead, e.g.:
+    #     --dbpedia_endpoint http://localhost:2222/rest
+    p.add_argument("--dbpedia_endpoint", default="https://api.dbpedia-spotlight.org/en")
     p.add_argument("--dbpedia_confidence", type=float, default=0.6)
     p.add_argument("--dbpedia_support", type=int, default=20)
 
