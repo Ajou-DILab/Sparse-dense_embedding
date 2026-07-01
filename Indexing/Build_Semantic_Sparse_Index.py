@@ -66,9 +66,12 @@ def parse_args():
     p.add_argument("--output_db", default="./output/msmarco_passage_index.sqlite",
                     help="Output SQLite index path")
     p.add_argument("--dbpedia_endpoint", default="http://localhost:2222/rest",
-                    help="DBpedia Spotlight REST endpoint. Must match the "
-                         "endpoint passed to evaluate_retrieval.py, or NE "
-                         "terms will not line up between indexing and query time.")
+                    help="DBpedia Spotlight REST endpoint. For a full-collection "
+                         "index, run a local Spotlight server (Docker Desktop or "
+                         "JAR) -- the public API is rate-limited and will not "
+                         "sustain this many requests. Must match the endpoint "
+                         "passed to evaluate.py, or NE terms will not line up "
+                         "between indexing and query time.")
     p.add_argument("--store_doc_terms", action="store_true",
                     help="Also store per-passage mapped term->tf dicts and raw "
                          "text (doc_terms / doc_text tables). Needed for the "
@@ -77,7 +80,7 @@ def parse_args():
     return p.parse_args()
 
 
-# Hyperparameters (args-independent)
+# ──────────────────── Hyperparameters (args-independent) ────────────────────
 PRETRAINED_MODEL = "bert-base-uncased"
 BATCH_SIZE = 64
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -92,7 +95,7 @@ if os.name == "nt":
     NUM_WORKERS = 0
     PERSISTENT_WORKERS = False
 
-# Global State
+# ──────────────────── Global State ────────────────────
 # Populated by run_indexing(args) at run time. Kept at module scope (rather than
 # passed around) so the existing mapping code below, which references them as
 # globals, keeps working unchanged.
@@ -104,7 +107,7 @@ lemma2syns = defaultdict(list)   # lemma -> [synset names]; built in run_indexin
 synset2emb = {}                  # synset name -> gloss embedding; loaded in run_indexing
 
 
-#  Main Indexing Pipeline 
+# ──────────────────── Main Indexing Pipeline ────────────────────
 def run_indexing(args):
     """Build the semantic sparse index described by `args`.
 
@@ -435,7 +438,7 @@ def run_indexing(args):
             )
         cur.execute("COMMIT;")
 
-      
+        # ──────────────────────────────────────────────────────────────────
         # Final index statistics
         #
         # "mapping count"  = tmp_tf SUM(tf) -> total occurrences of a bucket
@@ -447,7 +450,7 @@ def run_indexing(args):
         #   NE (untyped):   NE::ETC::
         #   WSD:            synset form (e.g. bank.n.01) - no NE/WSI prefix
         #   WSI:            WSI::CLU::{idx}  (single global, POS-agnostic clustering)
-        
+        # ──────────────────────────────────────────────────────────────────
         print("\nCalculating Final Index Statistics...")
 
         cur.execute("""
