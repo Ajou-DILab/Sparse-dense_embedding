@@ -28,11 +28,42 @@ named-entity recognition. The endpoint **must be identical** at index time and
 query time, otherwise NE terms will not line up. The default is
 `http://localhost:2222/rest`.
 
-The simplest way to run one locally is the official Docker image:
+You have to install Docker Desktop and Image Container tfor full version.
+
+This is for partial subset version of spotlight model using docker.
+
+##### 1) English Model Download (~2.2 GB)
 
 ```bash
-docker run -tid --restart unless-stopped --name dbpedia-spotlight.en \
-    -p 2222:80 dbpedia/dbpedia-spotlight spotlight.sh en
+cd ~/<YOUR_PROJECT_NAME>
+wget -O en.tar.gz "https://downloads.dbpedia.org/repo/dbpedia/spotlight/spotlight-model/2022.03.01/spotlight-model_lang=en.tar.gz"
+# ls -lh en.tar.gz        # download check
+tar xzf en.tar.gz
+# ls en/                  # file check
+```
+
+##### 2) Copy Model to PATH
+
+```bash
+docker run -tid --name spotlight-tmp --entrypoint /bin/bash -p 2222:80 dbpedia/dbpedia-spotlight -c "tail -f /dev/null"
+# docker ps | grep spotlight-tmp        # STATUS check
+```
+
+```bash
+docker cp en spotlight-tmp:/opt/spotlight/models/en
+# docker exec spotlight-tmp ls -la /opt/spotlight/models/en/   # file check
+```
+
+##### 3) Model Commit to local
+```bash
+docker commit spotlight-tmp dbpedia-spotlight-en:local
+docker rm -f spotlight-tmp
+```
+
+##### 4) Docker Image Server Implementation
+```bash
+docker run -tid --restart unless-stopped --name dbpedia-spotlight.en -p 2222:80 dbpedia-spotlight-en:local spotlight.sh en
+# docker logs -f dbpedia-spotlight.en    # Model Load check (exit with Ctrl+c)
 ```
 
 (For environments where Docker is unavailable, e.g. Colab, the Spotlight JAR
