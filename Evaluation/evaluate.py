@@ -217,7 +217,7 @@ def map_query(query_text: str, R: Resources, collect_detail: bool = False
 
     with torch.no_grad():
         with torch.autocast(device_type="cuda" if DEVICE.type == "cuda" else "cpu",
-                            dtype=torch.bfloat16, enabled=(DEVICE.type == "cuda")):
+                            dtype=torch.float16, enabled=(DEVICE.type == "cuda")):
             enc = R.tokenizer(words, is_split_into_words=True,
                               return_tensors="pt", padding=True, truncation=True).to(DEVICE)
             last_hidden = R.ctx.encoder(**enc).last_hidden_state[0]
