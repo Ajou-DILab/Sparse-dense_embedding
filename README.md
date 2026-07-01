@@ -137,7 +137,7 @@ mapping is identical on both sides). The whole run finishes in well under an
 hour on a single GPU.
 
 ```bash
-python Test_run/run_partial_pipeline.py --partial_dir ".\msmarco_partial" --db_path ".\partial_db.sqlite" --ctx_ckpt ".\best_bi_encoder_wsd.pt" --gloss_vec ".\wordnet_gloss_embeddings.pt" --medoids ".\medoids.pkl" --dbpedia_endpoint http://localhost:2222/rest --sample_n 5
+python Test_run/run_partial_pipeline.py --partial_dir ".\msmarco_partial" --dbpedia_endpoint http://localhost:2222/rest --sample_n 5
 ```
 
 (The index is always built with `doc_terms` stored, so the `--sample_n`
