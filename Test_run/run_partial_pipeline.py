@@ -88,7 +88,7 @@ def parse_args():
     # Index + model resources
     p.add_argument("--db_path", default="./partial_db.sqlite",
                    help="SQLite index path (written by indexing, read by search)")
-    p.add_argument("--ctx_ckpt", default="/best_bi_encoder_wsd.pt")
+    p.add_argument("--ctx_ckpt", default="./best_bi_encoder_wsd.pt")
     p.add_argument("--gloss_vec", default="./wordnet_gloss_embeddings.pt")
     p.add_argument("--medoids", default="./medoids.pkl")
     p.add_argument("--pretrained_model", default="bert-base-uncased")
