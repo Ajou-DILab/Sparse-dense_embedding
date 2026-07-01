@@ -106,7 +106,7 @@ def parse_args():
     # If that happens, run a local DBpedia Spotlight server (Docker or JAR) and
     # pass its endpoint instead, e.g.:
     #     --dbpedia_endpoint http://localhost:2222/rest
-    p.add_argument("--dbpedia_endpoint", default="https://api.dbpedia-spotlight.org/en")
+    p.add_argument("--dbpedia_endpoint", default="http://localhost:2222/rest")
     p.add_argument("--dbpedia_confidence", type=float, default=0.6)
     p.add_argument("--dbpedia_support", type=int, default=20)
 
