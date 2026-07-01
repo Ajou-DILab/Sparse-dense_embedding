@@ -240,6 +240,13 @@ def load_medoids(medoids_path: str, device) -> Optional[torch.Tensor]:
 # SQLite index 
 
 def init_db(db_path: str, store_doc_terms: bool = False):
+    """Create (or recreate) the SQLite database with the index schema.
+
+    Always creates the core tables the indexer writes to
+    (meta, doclen, postings, tmp_tf, passage_confidence). When
+    store_doc_terms=True, also creates the optional doc_terms / doc_text
+    tables used for the qualitative per-query inspection (--sample_n).
+    """
     if os.path.exists(db_path):
         os.remove(db_path)
     conn = sqlite3.connect(db_path)
@@ -247,6 +254,22 @@ def init_db(db_path: str, store_doc_terms: bool = False):
     cur.execute("PRAGMA journal_mode=OFF;")
     cur.execute("PRAGMA synchronous=OFF;")
     cur.execute("PRAGMA temp_store=MEMORY;")
+
+    cur.executescript("""
+        CREATE TABLE meta (k TEXT PRIMARY KEY, v TEXT);
+        CREATE TABLE doclen (pid TEXT PRIMARY KEY, dl INTEGER NOT NULL) WITHOUT ROWID;
+        CREATE TABLE postings ( term TEXT PRIMARY KEY, df INTEGER NOT NULL, blob BLOB NOT NULL ) WITHOUT ROWID;
+        CREATE TABLE tmp_tf ( term TEXT NOT NULL, pid TEXT NOT NULL, tf INTEGER NOT NULL );
+        CREATE INDEX idx_tmp_tf_term ON tmp_tf(term);
+        CREATE INDEX idx_tmp_tf_pid ON tmp_tf(pid);
+        CREATE TABLE passage_confidence (
+            pid              TEXT PRIMARY KEY,
+            ne_conf_avg      REAL,
+            ne_conf_cnt      INTEGER,
+            wsd_wsi_conf_avg REAL,
+            wsd_wsi_conf_cnt INTEGER
+        ) WITHOUT ROWID;
+    """)
 
     if store_doc_terms:
         cur.executescript("""
